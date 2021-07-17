@@ -157,6 +157,7 @@ func (a Arb) GetURL(prop string) (*url.URL, error) {
 }
 
 // Get Arb even if it is an IRI
+// TODO: Allow headers
 func (a Arb) FindArb(prop string) (Arb, error) {
 	iri, err := a.GetURL(prop)
 	if err != nil {
