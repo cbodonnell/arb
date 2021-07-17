@@ -12,10 +12,12 @@ import (
 
 type Arb map[string]interface{}
 
+// Create a new Arb
 func New() Arb {
 	return make(Arb)
 }
 
+// Read Arb
 func Read(r io.Reader) (Arb, error) {
 	decoder := json.NewDecoder(r)
 	var a Arb
@@ -23,6 +25,7 @@ func Read(r io.Reader) (Arb, error) {
 	return a, err
 }
 
+// Write Arb
 func (a Arb) Write(w io.Writer) error {
 	e := json.NewEncoder(w)
 	e.SetEscapeHTML(false)
@@ -31,18 +34,21 @@ func (a Arb) Write(w io.Writer) error {
 	return err
 }
 
+// Convert Arb to bytes
 func (a Arb) ToBytes() []byte {
 	var buf bytes.Buffer
 	a.Write(&buf)
 	return buf.Bytes()
 }
 
+// Convert Arb to string
 func (a Arb) ToString() string {
 	var buf bytes.Buffer
 	a.Write(&buf)
 	return buf.String()
 }
 
+// Get type of a property
 func (a Arb) GetType(prop string) interface{} {
 	p := a[prop]
 	switch t := p.(type) {
@@ -51,35 +57,42 @@ func (a Arb) GetType(prop string) interface{} {
 	}
 }
 
+// Check if property exists
 func (a Arb) Exists(prop string) bool {
 	return a[prop] != nil
 }
 
+// Check if property is bool
 func (a Arb) IsBool(prop string) bool {
 	_, r := a[prop].(bool)
 	return r
 }
 
+// Check if property is number
 func (a Arb) IsNumber(prop string) bool {
 	_, r := a[prop].(float64)
 	return r
 }
 
+// Check if property is string
 func (a Arb) IsString(prop string) bool {
 	_, r := a[prop].(string)
 	return r
 }
 
+// Check if property is an array
 func (a Arb) IsArray(prop string) bool {
 	_, r := a[prop].([]interface{})
 	return r
 }
 
+// Check if property is an Arb
 func (a Arb) IsArb(prop string) bool {
 	_, r := a[prop].(Arb)
 	return r
 }
 
+// Check if property is a URL
 func (a Arb) IsURL(prop string) bool {
 	s, err := a.GetString(prop)
 	if err != nil {
@@ -143,6 +156,7 @@ func (a Arb) GetURL(prop string) (*url.URL, error) {
 	return iri, nil
 }
 
+// Get Arb even if it is an IRI
 func (a Arb) FindArb(prop string) (Arb, error) {
 	iri, err := a.GetURL(prop)
 	if err != nil {
