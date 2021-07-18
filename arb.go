@@ -88,7 +88,7 @@ func (a Arb) IsArray(prop string) bool {
 
 // Check if property is an Arb
 func (a Arb) IsArb(prop string) bool {
-	_, r := a[prop].(Arb)
+	_, r := a[prop].(map[string]interface{})
 	return r
 }
 
@@ -137,7 +137,7 @@ func (a Arb) GetArray(prop string) ([]interface{}, error) {
 }
 
 func (a Arb) GetArb(prop string) (Arb, error) {
-	if s, ok := a[prop].(Arb); !ok {
+	if s, ok := a[prop].(map[string]interface{}); !ok {
 		return s, errors.New(fmt.Sprintf("%s is not an Arb", prop))
 	} else {
 		return s, nil
