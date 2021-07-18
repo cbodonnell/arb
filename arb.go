@@ -156,6 +156,17 @@ func (a Arb) GetURL(prop string) (*url.URL, error) {
 	return iri, nil
 }
 
+func (a Arb) ToArray(prop string) error {
+	if !a.IsArray(prop) {
+		s, err := a.GetString(prop)
+		if err != nil {
+			return err
+		}
+		a[prop] = []string{s}
+	}
+	return nil
+}
+
 // Get Arb even if it is an IRI
 // TODO: Allow headers
 func (a Arb) FindArb(prop string) (Arb, error) {
