@@ -137,10 +137,14 @@ func (a Arb) GetArray(prop string) ([]interface{}, error) {
 }
 
 func (a Arb) GetArb(prop string) (Arb, error) {
-	if s, ok := a[prop].(map[string]interface{}); !ok {
-		return s, errors.New(fmt.Sprintf("%s is not an Arb", prop))
+	if m, ok := a[prop].(map[string]interface{}); !ok {
+		if s, ok := a[prop].(Arb); !ok {
+			return s, errors.New(fmt.Sprintf("%s is not an Arb", prop))
+		} else {
+			return s, nil
+		}
 	} else {
-		return s, nil
+		return m, nil
 	}
 }
 
