@@ -160,14 +160,10 @@ func (a Arb) GetURL(prop string) (*url.URL, error) {
 	return iri, nil
 }
 
-// Convert a string property to an array
+// Convert a property to an array if it is not already
 func (a Arb) PropToArray(prop string) error {
 	if !a.IsArray(prop) {
-		s, err := a.GetString(prop)
-		if err != nil {
-			return err
-		}
-		a[prop] = []string{s}
+		a[prop] = []interface{}{a[prop]}
 	}
 	return nil
 }
