@@ -25,6 +25,13 @@ func Read(r io.Reader) (Arb, error) {
 	return a, err
 }
 
+// Read Arb from bytes
+func ReadBytes(b []byte) (Arb, error) {
+	var a Arb
+	err := json.Unmarshal(b, &a)
+	return a, err
+}
+
 // Write Arb
 func (a Arb) Write(w io.Writer) error {
 	e := json.NewEncoder(w)
