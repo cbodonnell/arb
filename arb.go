@@ -173,18 +173,10 @@ func (a Arb) GetArb(prop string) (Arb, error) {
 }
 
 func (a Arb) GetArbArray(prop string) ([]Arb, error) {
-	if s, ok := a[prop].([]interface{}); !ok {
-		return nil, errors.New(fmt.Sprintf("%s is not an array", prop))
+	if s, ok := a[prop].([]Arb); !ok {
+		return nil, errors.New(fmt.Sprintf("%s is not an Arb array", prop))
 	} else {
-		var arr []Arb
-		for _, item := range s {
-			if a, ok := item.(Arb); !ok {
-				return nil, errors.New(fmt.Sprintf("%s is not an arb array", prop))
-			} else {
-				arr = append(arr, a)
-			}
-		}
-		return arr, nil
+		return s, nil
 	}
 }
 
