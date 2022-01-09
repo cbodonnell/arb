@@ -1,26 +1,10 @@
-// This is a fork of https://humungus.tedunangst.com/r/webs/v/tip/f/junk/junk.go
-
-//
-// Copyright (c) 2019 Ted Unangst <tedu@tedunangst.com>
-//
-// Permission to use, copy, modify, and distribute this software for any
-// purpose with or without fee is hereby granted, provided that the above
-// copyright notice and this permission notice appear in all copies.
-//
-// THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
+// arb is a package that provides helpful methods for dealing with arbitrary JSON data
+// and provides methods to enforce strict typing
 package arb
 
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -59,14 +43,14 @@ func (a Arb) Write(w io.Writer) error {
 }
 
 // Convert Arb to bytes
-func (a Arb) ToBytes() []byte {
+func (a Arb) Bytes() []byte {
 	var buf bytes.Buffer
 	a.Write(&buf)
 	return buf.Bytes()
 }
 
 // Convert Arb to string
-func (a Arb) ToString() string {
+func (a Arb) String() string {
 	var buf bytes.Buffer
 	a.Write(&buf)
 	return buf.String()
@@ -123,14 +107,12 @@ func (a Arb) IsURL(prop string) bool {
 		return false
 	}
 	_, err = url.Parse(s)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
+
 func (a Arb) GetBool(prop string) (bool, error) {
 	if s, ok := a[prop].(bool); !ok {
-		return s, errors.New(fmt.Sprintf("%s is not a bool", prop))
+		return s, fmt.Errorf("%s is not a bool", prop)
 	} else {
 		return s, nil
 	}
@@ -138,7 +120,7 @@ func (a Arb) GetBool(prop string) (bool, error) {
 
 func (a Arb) GetNumber(prop string) (float64, error) {
 	if s, ok := a[prop].(float64); !ok {
-		return s, errors.New(fmt.Sprintf("%s is not a number", prop))
+		return s, fmt.Errorf("%s is not a number", prop)
 	} else {
 		return s, nil
 	}
@@ -146,7 +128,7 @@ func (a Arb) GetNumber(prop string) (float64, error) {
 
 func (a Arb) GetString(prop string) (string, error) {
 	if s, ok := a[prop].(string); !ok {
-		return s, errors.New(fmt.Sprintf("%s is not a string", prop))
+		return s, fmt.Errorf("%s is not a string", prop)
 	} else {
 		return s, nil
 	}
@@ -154,7 +136,7 @@ func (a Arb) GetString(prop string) (string, error) {
 
 func (a Arb) GetArray(prop string) ([]interface{}, error) {
 	if s, ok := a[prop].([]interface{}); !ok {
-		return s, errors.New(fmt.Sprintf("%s is not an array", prop))
+		return s, fmt.Errorf("%s is not an array", prop)
 	} else {
 		return s, nil
 	}
@@ -163,7 +145,7 @@ func (a Arb) GetArray(prop string) ([]interface{}, error) {
 func (a Arb) GetArb(prop string) (Arb, error) {
 	if m, ok := a[prop].(map[string]interface{}); !ok {
 		if s, ok := a[prop].(Arb); !ok {
-			return s, errors.New(fmt.Sprintf("%s is not an Arb", prop))
+			return s, fmt.Errorf("%s is not an Arb", prop)
 		} else {
 			return s, nil
 		}
@@ -174,7 +156,7 @@ func (a Arb) GetArb(prop string) (Arb, error) {
 
 func (a Arb) GetArbArray(prop string) ([]Arb, error) {
 	if s, ok := a[prop].([]Arb); !ok {
-		return nil, errors.New(fmt.Sprintf("%s is not an Arb array", prop))
+		return nil, fmt.Errorf("%s is not an Arb array", prop)
 	} else {
 		return s, nil
 	}
@@ -201,7 +183,7 @@ func (a Arb) PropToArray(prop string) error {
 }
 
 // Get Arb even if it is an IRI
-// TODO: Allow headers
+// -- TODO: Allow headers to be passed
 func (a Arb) FindArb(prop string) (Arb, error) {
 	iri, err := a.GetURL(prop)
 	if err != nil {
